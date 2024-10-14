@@ -3,14 +3,14 @@
 const Permission = require("../models/Permission");
 const Role = require("../models/role");
 
- 
+
 // Create a new role
 const createRole = async (req, res) => {
     const { name, description, permissions } = req.body;
 
     try {
         const role = await Role.create({ name, description });
-        
+
         if (permissions && permissions.length > 0) {
             const permissionsToAdd = await Permission.findAll({
                 where: {
@@ -29,19 +29,38 @@ const createRole = async (req, res) => {
 // Get all roles
 const getAllRoles = async (req, res) => {
     try {
-        const roles = await Role.findAll({ include: Permission });
+        const roles = await Role.findAll({
+            include: {
+                model: Permission,
+                attributes: ['id', 'name', 'description'], // Select only specific fields
+                through: { attributes: [] }, // Exclude RolePermission data
+            },
+            attributes: ['id', 'name', 'description'], // Select only specific fields
+
+        });
         return res.status(200).json(roles);
     } catch (error) {
         return res.status(500).json({ message: 'Error fetching roles', error });
     }
 };
 
+
+
 // Get a single role by ID
 const getRoleById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const role = await Role.findByPk(id, { include: Permission });
+        const role = await Role.findByPk(id, { 
+            
+            include: {
+                model: Permission,
+                attributes: ['id', 'name', 'description'], // Select only specific fields
+                through: { attributes: [] }, // Exclude RolePermission data
+            },
+            attributes: ['id', 'name', 'description'], // Select only specific fields
+
+         });
         if (!role) {
             return res.status(404).json({ message: 'Role not found' });
         }

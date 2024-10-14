@@ -1,5 +1,5 @@
 // middleware/authorization.js
-const authorize = (requiredRoles) => {
+const authorization = (requiredRoles) => {
     return (req, res, next) => {
         const userRoles = req.user.roles; // This assumes that roles are stored in the token and available in req.user
 
@@ -14,4 +14,4 @@ const authorize = (requiredRoles) => {
     };
 };
 
-module.exports = authorize;
+module.exports = authorization;

@@ -1,7 +1,7 @@
 // middleware/authentication.js
 const jwt = require('jsonwebtoken');
 
-const authenticate = (req, res, next) => {
+const authentication = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1]; // Expecting format: "Bearer TOKEN"
 
     if (!token) {
@@ -17,4 +17,4 @@ const authenticate = (req, res, next) => {
     }
 };
 
-module.exports = authenticate;
+module.exports = authentication;

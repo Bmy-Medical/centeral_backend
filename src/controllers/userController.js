@@ -1,5 +1,5 @@
 // userController.js
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const isValidPassword = require("../helpers/validatePassword");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
@@ -35,8 +35,7 @@ exports.register = async (req, res) => {
         // Get the assigned roles
         const roles = await newUser.getRoles();
 
-        // Generate a JWT token
-        const token = generateToken(newUser.id, roles);
+
 
         // Publish a "UserRegistered" message to the message broker
         publishMessage('UserRegistered', {
@@ -47,7 +46,6 @@ exports.register = async (req, res) => {
 
         return res.status(201).json({
             message: 'User registered successfully',
-            token,
             roles: roles.map(role => role.name), // Return role names
         });
 
@@ -86,6 +84,7 @@ exports.login = async (req, res) => {
         return res.status(200).json({
             message: 'Login successful',
             token,
+            user,
             roles: roles.map(role => role.name), // Return role names
         });
     } catch (error) {

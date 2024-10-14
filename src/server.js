@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const sequelize = require('./configs/connection');
 const setupAssociations = require("./models/association");
+const permissionRoute = require('./routes/permissionRoute');
 const roleRoute = require('./routes/roleRoute');
 const userRoute = require('./routes/userRoute')
 const app = express();
@@ -20,6 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 
 const apiRouter = express.Router();
 app.use("/api/v1", apiRouter);
+apiRouter.use('/permission',permissionRoute)
+apiRouter.use('/role',roleRoute)
 apiRouter.use('/users',userRoute)
 
 
