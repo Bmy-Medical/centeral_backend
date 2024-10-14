@@ -5,10 +5,10 @@ const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRATION = process.env.JWT_EXPIRATION || '1h'; // Token expiration time
 
 // Function to generate a token
-const generateToken = (userId, roles) => {
+const generateToken = (userId, rolesWithPermissions) => {
     const payload = {
         userId,
-        roles: roles.map(role => role.name),  
+        roles: rolesWithPermissions.map(role => role.name),  
     };
 
     // Generate a signed JWT

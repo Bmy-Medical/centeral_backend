@@ -5,6 +5,7 @@ const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 const { publishMessage } = require("../services/messageBroker");
 const Role = require('../models/role');
+const Permission = require('../models/Permission');
 
 // Register user
 exports.register = async (req, res) => {
@@ -75,17 +76,30 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Get roles for the user
-        const roles = await user.getRoles(); // Assuming Sequelize relationship is set up
+        // Fetch user roles and permissions, excluding the UserRole data
+        const rolesWithPermissions = await user.getRoles({
+            attributes: ['id', 'name'], // Include only relevant role fields
+            include: [
+                {
+                    model: Permission,
+                    attributes: ['id', 'name', 'description'], // Include specific permission fields
+                    through: { attributes: [] }, // Exclude RolePermission data
+                },
+            ],
+            // Exclude UserRole from the result
+            through: {
+                attributes: [], // This will exclude the UserRole attributes from the response
+            },
+        });
 
         // Generate a JWT token
-        const token = generateToken(user.id, roles);
+        const token = generateToken(user.id, rolesWithPermissions);
 
         return res.status(200).json({
             message: 'Login successful',
             token,
             user,
-            roles: roles.map(role => role.name), // Return role names
+            roles: rolesWithPermissions, // Return roles with permissions, excluding UserRole
         });
     } catch (error) {
         console.error('Error during login:', error);
@@ -95,3 +109,4 @@ exports.login = async (req, res) => {
         });
     }
 };
+
